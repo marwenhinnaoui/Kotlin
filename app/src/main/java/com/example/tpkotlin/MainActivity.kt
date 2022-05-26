@@ -110,12 +110,14 @@ fun DogCard(dog:Dog,  NavCtlr:NavController){
             verticalArrangement = Arrangement.Center,
         ) {
 
-            Text(text = dog.name)
+            Text(text = dog.name )
             Text(text = "${dog.age}")
             Row(
+                Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(text = dog.location)
+                Text(text = dog.name)
 
             }
 
