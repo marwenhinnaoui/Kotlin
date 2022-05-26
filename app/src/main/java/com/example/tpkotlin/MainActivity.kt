@@ -20,6 +20,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavType
+import androidx.navigation.Navigation
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.tpkotlin.ui.theme.TpKotlinTheme
 data class Owner(val name: String, val bio: String, val image:Int)
 
@@ -48,18 +55,38 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize(),
 
                 ) {
-                    DogList(FakeDogDatabase.dogList)
+                    Navigation()
+
                 }
             }
         }
     }
 }
 @Composable
-fun DogCard(dog:Dog){
+fun Navigation(){
+    val NavCtlr = rememberNavController()
+    NavHost(navController = NavCtlr, startDestination = "List"){
+    composable("Details/{Id}"
+    ,
+        arguments = listOf(navArgument("Id") { type = NavType.IntType })
+        )
+        {
+                backStackEntry ->
+                    Details(NavCtlr, backStackEntry.arguments?.getInt("Id")) }
+    composable("List") {     DogList(FakeDogDatabase.dogList, NavCtlr) }
+    }
+
+
+}
+@Composable
+fun DogCard(dog:Dog,  NavCtlr:NavController){
 
     Surface(
+        elevation = 13.dp,
+        modifier = Modifier.clickable {
+            NavCtlr.navigate("Details/${dog.id}")
+        }
     ) {
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -89,7 +116,7 @@ fun DogCard(dog:Dog){
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(text = dog.location)
-                Text(text = dog.name)
+
             }
 
 
@@ -102,7 +129,7 @@ fun DogCard(dog:Dog){
 
 
 @Composable
-fun DogList(dogs: List<Dog>) {
+fun DogList(dogs: List<Dog>, NavCtlr: NavController) {
     Scaffold(
         topBar = {
             TopAppBar() {
@@ -114,7 +141,7 @@ fun DogList(dogs: List<Dog>) {
     LazyColumn(
     ) {
         items(dogs) { dog ->
-            DogCard(dog)
+            DogCard(dog, NavCtlr)
         }
     }
     }
